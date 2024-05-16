@@ -2,58 +2,98 @@ import flet as ft
 
 
 def main(page):
+    # Создаем references для текстовых полей и колонок
     first_name = ft.Ref[ft.TextField]()
     last_name = ft.Ref[ft.TextField]()
-    greetings = ft.Ref[ft.Column]()
     password = ft.Ref[ft.TextField]()
     confirmpassword = ft.Ref[ft.TextField]()
-    def shoosing(e):
+    greetings = ft.Ref[ft.Column]()
 
-        greetings.current.controls.append(
-            ft.Page(f" {first_name.current.value} {last_name.current.value} registered! your password is {password.current.value}")
+    def show_product_selection(e):
+        # Обновляем вид на страницу выбора продукта
+        page.views.append(
+            ft.View(
+                "/products",
+                [
+                    ft.AppBar(title=ft.Text("Product Selection")),
+                    ft.ElevatedButton("Pizza",
+                                      on_click=lambda _: page.snack_bar(ft.SnackBar(ft.Text("Pizza selected!")))),
+                    ft.ElevatedButton("Burger",
+                                      on_click=lambda _: page.snack_bar(ft.SnackBar(ft.Text("Burger selected!")))),
+                    ft.ElevatedButton("Sushi",
+                                      on_click=lambda _: page.snack_bar(ft.SnackBar(ft.Text("Sushi selected!")))),
+                    ft.ElevatedButton("Go back", on_click=lambda _: page.go("/")),
+                ]
+            )
         )
-        first_name.current.value = ""
-        last_name.current.value = ""
-        password.current.value = ""
-        confirmpassword.current.value = ""
         page.update()
-        first_name.current.focus()
-
-        page.add(
-            ft.TextField(ref=first_name, label="food", autofocus=True),
-            ft.TextField(ref=last_name, label="Last name"),
-            ft.TextField(ref=password, label="Enter password", autofocus=True),
-            ft.TextField(ref=confirmpassword, label="Confirm the password"),
-            ft.ElevatedButton("Register me!", on_click=btn_click),
-            ft.ElevatedButton("Go to product selection", on_click=shoosing),
-            ft.Column(ref=greetings),
-        )
-
 
     def btn_click(e):
-
+        # Добавляем сообщение о регистрации
         greetings.current.controls.append(
-            ft.Text(f"User {first_name.current.value} {last_name.current.value} registered! your password is {password.current.value}")
+            ft.Text(
+                f"User {first_name.current.value} {last_name.current.value} registered! Your password is {password.current.value}")
         )
+        if password.current.value != confirmpassword.current.value:
+            greetings.current.controls.append(
+                ft.Text("Passwords do not match!", color=ft.colors.RED)
+            )
         first_name.current.value = ""
         last_name.current.value = ""
         password.current.value = ""
         confirmpassword.current.value = ""
         page.update()
         first_name.current.focus()
-        if password.current.value != confirmpassword.current.value:
-            ft.Text("Password is not working")
 
+    # Главная страница регистрации
     page.add(
         ft.TextField(ref=first_name, label="First name", autofocus=True),
         ft.TextField(ref=last_name, label="Last name"),
-        ft.TextField(ref=password, label="Enter password", autofocus=True),
-        ft.TextField(ref=confirmpassword, label="Confirm the password"),
+        ft.TextField(ref=password, label="Enter password", password=True, can_reveal_password=True),
+        ft.TextField(ref=confirmpassword, label="Confirm the password", password=True, can_reveal_password=True),
         ft.ElevatedButton("Register me!", on_click=btn_click),
-        ft.ElevatedButton("Go to product selection", on_click=shoosing),
+        ft.ElevatedButton("Go to product selection", on_click=show_product_selection),
         ft.Column(ref=greetings),
     )
 
+    # Обрабатываем переходы между страницами
+    def route_change(route):
+        page.views.clear()
+        if page.route == "/":
+            page.views.append(
+                ft.View(
+                    "/",
+                    [
+                        ft.TextField(ref=first_name, label="First name", autofocus=True),
+                        ft.TextField(ref=last_name, label="Last name"),
+                        ft.TextField(ref=password, label="Enter password", password=True, can_reveal_password=True),
+                        ft.TextField(ref=confirmpassword, label="Confirm the password", password=True,
+                                     can_reveal_password=True),
+                        ft.ElevatedButton("Register me!", on_click=btn_click),
+                        ft.ElevatedButton("Go to product selection", on_click=show_product_selection),
+                        ft.Column(ref=greetings),
+                    ]
+                )
+            )
+        elif page.route == "/products":
+            page.views.append(
+                ft.View(
+                    "/products",
+                    [
+                        ft.AppBar(title=ft.Text("Product Selection")),
+                        ft.ElevatedButton("Pizza",
+                                          on_click=lambda _: page.snack_bar(ft.SnackBar(ft.Text("Pizza selected!")))),
+                        ft.ElevatedButton("Burger",
+                                          on_click=lambda _: page.snack_bar(ft.SnackBar(ft.Text("Burger selected!")))),
+                        ft.ElevatedButton("Sushi",
+                                          on_click=lambda _: page.snack_bar(ft.SnackBar(ft.Text("Sushi selected!")))),
+                        ft.ElevatedButton("Go back", on_click=lambda _: page.go("/")),
+                    ]
+                )
+            )
+        page.update()
+
+    page.on_route_change = route_change
 
 
 ft.app(target=main, view=ft.AppView.WEB_BROWSER)
