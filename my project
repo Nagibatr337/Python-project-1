@@ -13,9 +13,9 @@ def main(page):
     total_price = 0  # Общая стоимость выбранных продуктов
 
     products = [
-        {"name": "Pizza", "price": 8.99},
+        {"name": "Latte", "price": 5.09},
         {"name": "Burger", "price": 5.49},
-        {"name": "Sushi", "price": 12.99}
+        {"name": "Apple juice", "price": 1.59}
     ]
 
     def show_product_selection(e):
