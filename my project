@@ -15,7 +15,9 @@ def main(page):
     products = [
         {"name": "Latte", "price": 5.09},
         {"name": "Burger", "price": 5.49},
-        {"name": "Apple juice", "price": 1.59}
+        {"name": "Apple juice", "price": 1.59},
+        {"name": "Chocolate bar", "price": 1.19},
+        {"name": "Soup", "price": 3.09}
     ]
 
     def show_product_selection(e):
