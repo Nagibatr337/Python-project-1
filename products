@@ -1,0 +1,61 @@
+    products = [
+        {"name": "Latte", "price": 5.09},
+        {"name": "Burger", "price": 5.49},
+        {"name": "Apple juice", "price": 1.59},
+        {"name": "Chocolate bar", "price": 1.19},
+        {"name": "Soup", "price": 3.09}
+    ]
+
+    def show_product_selection(e):
+        # Обновляем вид на страницу выбора продукта
+        product_buttons = [
+            ft.ElevatedButton(f"{product['name']} - ${product['price']}", on_click=lambda e, p=product: add_product(p))
+            for product in products
+        ]
+        product_buttons.append(ft.ElevatedButton("Go back", on_click=lambda _: page.go("/")))
+        page.views.append(
+            ft.View(
+                "/products",
+                [
+                    ft.AppBar(title=ft.Text("Product Selection")),
+                    *product_buttons,
+                    ft.ElevatedButton("Checkout", on_click=show_receipt)
+                ]
+            )
+        )
+        page.update()
+
+    def add_product(product):
+        nonlocal total_price
+        selected_products.append(product)
+        total_price += product['price']
+        page.snack_bar = ft.SnackBar(ft.Text(f"Added {product['name']} to cart. Total: ${total_price:.2f}"))
+        page.snack_bar.open = True
+        page.update()
+
+    def remove_product(index):
+        nonlocal total_price
+        product = selected_products.pop(index)
+        total_price -= product['price']
+        show_receipt(None)
+
+    def show_receipt(e):
+        receipt_controls = [
+            ft.Row([
+                ft.Text(f"{product['name']} - ${product['price']}"),
+                ft.IconButton(ft.icons.DELETE, on_click=lambda e, i=i: remove_product(i))
+            ])
+            for i, product in enumerate(selected_products)
+        ]
+        receipt_controls.append(ft.Text(f"Total: ${total_price:.2f}"))
+        receipt_controls.append(ft.ElevatedButton("Go back", on_click=lambda _: page.go("/products")))
+        page.views.append(
+            ft.View(
+                "/receipt",
+                [
+                    ft.AppBar(title=ft.Text("Receipt")),
+                    *receipt_controls
+                ]
+            )
+        )
+        page.update()
